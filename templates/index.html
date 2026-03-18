@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AI Resume Analyzer</title>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            margin: 0;
+            background: #0f172a;
+            color: #e2e8f0;
+        }
+
+        .container {
+            width: 95%;
+            margin: auto;
+            margin-top: 30px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .main {
+            display: flex;
+            gap: 20px;
+        }
+
+        /* LEFT PANEL */
+        .left {
+            width: 55%;
+        }
+
+        /* RIGHT PANEL (PDF PREVIEW) */
+        .right {
+            width: 45%;
+            background: #1e293b;
+            padding: 15px;
+            border-radius: 10px;
+            height: 85vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .right h3 {
+            margin-bottom: 10px;
+        }
+
+        iframe {
+            flex-grow: 1;
+            border: none;
+            border-radius: 10px;
+        }
+
+        .card {
+            background: #1e293b;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+
+        .upload {
+            text-align: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 15px;
+            background: #3b82f6;
+            border: none;
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background: #2563eb;
+        }
+
+        .score-bar {
+            width: 100%;
+            height: 12px;
+            background: #334155;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        .score-fill {
+            height: 100%;
+            width: {{ score if score else 0 }}%;
+            background: #22c55e;
+            border-radius: 10px;
+        }
+
+        .grid {
+            display: flex;
+            gap: 10px;
+        }
+
+        .box {
+            flex: 1;
+            background: #334155;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #3b82f6;
+            padding: 6px 10px;
+            border-radius: 6px;
+            margin: 5px;
+            font-size: 12px;
+        }
+
+        .bad {
+            background: #ef4444;
+        }
+
+        ul {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>AI Resume Analyzer</h1>
+
+    <div class="main">
+
+        <!-- LEFT SIDE -->
+        <div class="left">
+
+            <div class="card upload">
+                <form method="POST" enctype="multipart/form-data">
+                    <input type="file" name="resume" required>
+                    <br><br>
+                    <button>Analyze Resume</button>
+                </form>
+            </div>
+
+            {% if score %}
+
+            <div class="card">
+                <h3>Resume Score: {{ score }}%</h3>
+                <div class="score-bar">
+                    <div class="score-fill"></div>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="box">Impact<br>{{ sections.impact }}</div>
+                <div class="box">Brevity<br>{{ sections.brevity }}</div>
+                <div class="box">Style<br>{{ sections.style }}</div>
+                <div class="box">Skills<br>{{ sections.skills }}</div>
+            </div>
+
+            <div class="card">
+                <h3>Extracted Skills</h3>
+                {% for skill in skills %}
+                    <span class="tag">{{ skill }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="card">
+                <h3>Missing Skills</h3>
+                {% for skill in missing %}
+                    <span class="tag bad">{{ skill }}</span>
+                {% endfor %}
+            </div>
+
+            <div class="card">
+                <h3>Recommendations</h3>
+                <ul>
+                    {% for r in recommendations %}
+                        <li>{{ r }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+
+            {% endif %}
+
+        </div>
+
+        <!-- RIGHT SIDE (PDF PREVIEW) -->
+        <div class="right">
+            <h3>Resume Preview</h3>
+
+            {% if pdf_file %}
+                <iframe src="{{ url_for('uploaded_file', filename=pdf_file) }}"></iframe>
+            {% else %}
+                <p>Upload a resume to preview here...</p>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+
+</body>
+</html>
